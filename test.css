@@ -1,0 +1,208 @@
+#canvas_div{
+    margin:0 0;
+    border: 1px;
+    z-index: 0;
+}
+#canvas{
+    position: absolute;
+    margin:0 0;
+    border: 1px solid;
+    z-index: 0;
+}
+#cursor_canvas{
+    position: absolute;
+    margin:0 0;
+    border: 1px;
+    z-index: 20;
+    background-color: rgba(255,255,255,0);
+}
+#stamp_canvas{
+    position: absolute;
+    margin:0 0;
+    border: 1px;
+    z-index: 10;
+    background-color: rgba(255,255,255,0);
+}
+label{
+    position: absolute;
+    left: 30px;
+    width: 400px;
+}
+#dest_x,#dest_y{
+    width: 100px;
+    position: absolute;
+    left: 125px;
+    border: none;
+    border-bottom: 1px solid cornflowerblue;
+    border-radius: 0;
+}
+#toolbar{
+    width: 90px;
+    position: fixed;
+    border: 5px groove;
+    top: 10%;
+    left: 205mm;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    z-index: 100;
+}
+#slightlyAdjust{
+    width: 60px;
+    position: fixed;
+    left: 235mm;
+    top: 15%;
+    border: 5px groove lightgray;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+#font_setting{
+    display: none;
+    width: 100px;
+    position: fixed;
+    left: 235mm;
+    top: 20%;
+    border: 5px groove lightgray;
+    font-weight: bold;
+    font-size: small;
+    z-index: 100;
+}
+#chooseStamp{
+    display: none;
+    width: 120px;
+    position: fixed;
+    left: 235mm;
+    top: 30%;
+    border: 5px groove lightgray;
+    font-weight: bold;
+    font-size: small;
+    z-index: 100;
+}
+#basicPanel{
+    width: 150px;
+    height: 150px;
+    position: fixed;
+    z-index: 100;
+    left: 160mm;
+    bottom: 0;
+}
+.menu{
+    width: 100%;
+    height: 25px;
+    font-style: italic;
+    font-size: small;
+    background-color: lightgray;
+    border-style: solid;
+    border-radius: 3px;
+}
+.slidePanel{
+    margin: 0 0;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.nodisplay{
+    visibility: hidden;
+}
+.nodisplay,.display{
+    width: 33%;
+    height: 23px;
+    border-radius: 50%;
+    background-color: lightgray;
+    text-align: center;
+    cursor: pointer;
+}
+@media screen and (max-width: 768px) {
+    #toolbar{
+        left: 5%;
+    }
+    #basicPanel{
+        left: auto;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+    #font_setting{
+        left: 32%;
+        top: 15%;
+    }
+}
+button{
+    width: 48%;
+    height: 30px;
+    font-weight: bold;
+    border-width: 2px;
+    border-color: navy;
+    border-style: none none solid;
+    background-color: rgb(255, 255, 255);
+    /* margin-left: 1px;
+    margin-right: 1px; */
+    cursor: pointer;
+}
+hr{
+    flex: 0 0 100%;
+    border-style: dashed;
+}
+img{
+    margin: 0;
+}
+#flange{
+    background: url("/images/flange.svg") no-repeat;
+}
+#valve{
+    background: url("/images/valve.svg") no-repeat;
+}
+#fluent{
+    background: url("/images/fluent.svg") no-repeat;
+}
+#shape_snake{
+    background: url("/images/shape-snake.svg") no-repeat;
+}
+#large_to_small{
+    background: url("/images/large-to-small.svg") no-repeat;
+}
+#small_to_large{
+    background: url("/images/small-to-large.svg") no-repeat;
+}
+#safety{
+    background: url("/images/safety.svg") no-repeat;
+}
+#pressure_gauge{
+    background: url("/images/pressure-gauge.svg") no-repeat;
+}
+#gang{
+    background: url("/images/gang.svg") no-repeat;
+}
+#quan{
+    background: url("/images/quan.svg") no-repeat;
+}
+#hotkey,#about{
+    width: 100%;
+    font-weight: bold;
+    font-style: italic;
+    border: none;
+    color: blue;
+    cursor: alias;
+}
+#fontSize{
+    width: 51px;
+}
+.close{
+    width: 20px;
+    height: 20px;
+}
+.liBtn{
+    width: 100px;
+    height: 20px;
+}
+.btn_hover{
+    fill-opacity: 0;
+    transition: all 0.5s;
+}
+.btn_hover:hover{
+    fill-opacity: 0.5;
+    transition: all 0.5s;
+}

@@ -1,0 +1,12 @@
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="SVGRoot" width="40px" height="30px" version="1.1" viewBox="0 0 40 30" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <marker id="Arrow2Mend" overflow="visible" orient="auto">
+   <path transform="scale(.6) rotate(180) translate(0)" d="m8.7186 4.0337-10.926-4.0177 10.926-4.0177c-1.7455 2.3721-1.7354 5.6175-6e-7 8.0354z" fill="context-stroke" fill-rule="evenodd" stroke="context-stroke" stroke-linejoin="round" stroke-width=".625"/>
+  </marker>
+ </defs>
+ <g fill="none" stroke="#000" stroke-linecap="round" stroke-width="2">
+  <path d="m5 15h20" marker-end="url(#Arrow2Mend)"/>
+  <path d="m25 15h10"/>
+ </g>
+</svg>

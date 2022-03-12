@@ -1,0 +1,96 @@
+/*
+ *    Copyright(c)2021-2099, 江苏省特种设备安全监督检验研究院扬州分院
+ *    项目名称:单线图手机端在线绘制
+ *    文件名称:app.css
+ *    Date:2021/3/16 上午3:43
+ *    作者:周啸天
+ */
+
+button{
+    width: 50px;
+    height: 50px;
+    border-color: rebeccapurple;
+    border-width: 2px;
+    border-radius: 25px;
+    background-color: rgba(255,255,255,0);
+    text-align: center;
+    font-size: 15px;
+}
+#stamp_page,#move_page,#coordinate_page,#component_page,#function_page{
+    display: none;
+    position: fixed;
+    bottom: 115px;
+    z-index: 200;
+    /*margin-top: auto;*/
+}
+#main_page{
+    position: fixed;
+    bottom: 50px;
+    z-index: 100;
+}
+#canvas_div{
+    margin:0 0;
+    border: 1px;
+    z-index: 0;
+}
+#canvas{
+    position: absolute;
+    margin:0 0;
+    border: 1px solid;
+    z-index: 0;
+}
+#cursor_canvas{
+    position: absolute;
+    margin:0 0;
+    border: 1px;
+    z-index: 20;
+    background-color: rgba(255,255,255,0);
+}
+#stamp_canvas{
+    position: absolute;
+    margin:0 0;
+    border: 1px;
+    z-index: 10;
+    background-color: rgba(255,255,255,0);
+}
+label{
+    position: absolute;
+    left: 30px;
+    width: 400px;
+}
+#dest_x,#dest_y{
+    width: 100px;
+    position: absolute;
+    left: 125px;
+    border: none;
+    border-bottom: 1px solid cornflowerblue;
+    border-radius: 0;
+}
+#label_cursor{
+    font-style: italic;
+}
+
+hr{
+    border-bottom: 1px solid gray;
+}
+
+@keyframes blink{
+    0%{opacity: 1;}  
+    100%{opacity: 0;} 
+}
+@-webkit-keyframes blink {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@-moz-keyframes blink {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+.blink{
+    color:rgb(255, 0, 0);
+    font-weight: bold;
+    animation: blink 0.6s linear infinite;
+    -webkit-animation: blink 0.6s linear infinite;
+    -moz-animation: blink 0.6s linear infinite;
+}

@@ -1,0 +1,25 @@
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="SVGRoot" width="240" height="240" version="1.1" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <g fill="#000000">
+  <text x="42" y="65" font-family="FangSong" font-size="18.667px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25" xml:space="preserve"><tspan x="42" y="65" font-family="FangSong" font-size="18.667px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">前进</tspan></text>
+  <g font-family="sans-serif" font-size="17.333px">
+   <text x="16" y="46" style="line-height:1.25" xml:space="preserve"><tspan x="16" y="46" font-family="FangSong" font-size="17.333px">西</tspan></text>
+   <text x="17" y="86" style="line-height:1.25" xml:space="preserve"><tspan x="17" y="86" font-family="FangSong" font-size="17.333px">南</tspan></text>
+   <text x="52" y="106" style="line-height:1.25" xml:space="preserve"><tspan x="52" y="106" font-family="FangSong" font-size="17.333px">下</tspan></text>
+   <text x="85" y="86" style="line-height:1.25" xml:space="preserve"><tspan x="85" y="86" font-family="FangSong" font-size="17.333px">东</tspan></text>
+   <text x="86" y="46" style="line-height:1.25" xml:space="preserve"><tspan x="86" y="46" font-family="FangSong" font-size="17.333px">北</tspan></text>
+   <text x="51" y="26" style="line-height:1.25" xml:space="preserve"><tspan x="51" y="26" font-family="FangSong" font-size="17.333px">上</tspan></text>
+  </g>
+ </g>
+ <g fill-opacity="0" stroke="#000">
+  <g>
+   <path d="m45.971 86.07-10.135 17.555a50 50 0 0 0 24.164 6.375 50 50 0 0 0 23.664-6.1074l-10.139-17.562a29.75 29.75 0 0 1-13.525 3.4199 29.75 29.75 0 0 1-14.029-3.6797z" onclick="set_dn();"/>
+   <path d="m89.68 61.5a29.75 29.75 0 0 1-12.705 22.803l10.17 17.615a50 50 0 0 0 22.805-40.418z" onclick="set_se();"/>
+   <path d="m10.051 61.5a50 50 0 0 0 22.344 40.082l10.182-17.635a29.75 29.75 0 0 1-12.256-22.447z" onclick="set_sw();"/>
+   <path d="m33.76 17.455a50 50 0 0 0-23.674 40.045h20.279a29.75 29.75 0 0 1 13.543-22.469z" onclick="set_nw();"/>
+   <path d="m85.738 17.189-10.111 17.514a29.75 29.75 0 0 1 14.008 22.797h20.279a50 50 0 0 0-24.176-40.311z" onclick="set_ne();"/>
+   <path d="m60 10a50 50 0 0 0-22.697 5.5898l10.145 17.572a29.75 29.75 0 0 1 12.553-2.9121 29.75 29.75 0 0 1 12.045 2.6562l10.148-17.58a50 50 0 0 0-22.193-5.3262z" onclick="set_up();"/>
+  </g>
+  <circle cx="60" cy="60" r="25" onclick="draw();"/>
+ </g>
+</svg>

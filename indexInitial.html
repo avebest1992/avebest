@@ -1,0 +1,206 @@
+<!--
+  ~    Copyright(c)2021-2099, 江苏省特种设备安全监督检验研究院扬州分院
+  ~    项目名称:单线图手机端在线绘制
+  ~    文件名称:index.html
+  ~    Date:2021/3/22 下午10:50
+  ~    作者:周啸天
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <title>单线图在线绘制工具</title>
+     <link rel="shortcut icon" href="fav.ico" type="image/x-icon">
+    <link type="text/css" rel="stylesheet" href="app.css?v=0.0.5" />
+    <script>
+        /*禁止ios缩放，双击和双指*/
+        window.onload=function () {
+            document.addEventListener('touchstart',function (event) {
+                if(event.touches.length>1){
+                    event.preventDefault();
+                }
+            });
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend',function (event) {
+                const now = (new Date()).getTime();
+                if(now-lastTouchEnd<=300){
+                    event.preventDefault();
+                }
+                lastTouchEnd=now;
+            },false);
+            document.addEventListener('gesturestart', function (event) {
+                event.preventDefault();
+            });
+            document.addEventListener('dblclick', function (event) {
+                event.preventDefault();
+            })
+        };
+    </script>
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?a18c1ae3f13574ef224c2866e5fd32d4";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+<dialog open="open" id="font_setting_page">
+    <script>
+        document.getElementById("font_setting_page").close()
+    </script>
+
+    <form id="font_setting" onsubmit="return false">
+        <table>
+            <tr>
+                <td>颜色：</td>
+                <td><input type="color" /></td>
+            </tr>
+            <tr>
+                <td>字号：</td>
+                <td><input type="number" min="10" max="100" value="12"></td>
+            </tr>
+            <tr>
+                <td>字体：</td>
+                <td><select>
+                    <option value="Arial">Arial</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="黑体">黑体</option>
+                    <option value="宋体">宋体</option>
+                    <option value="楷体">楷体</option>
+                </select></td>
+            </tr>
+        </table>
+        </form>
+    <button onclick="font_setting(1)">确定</button>
+    <button onclick="font_setting(0)">取消</button>
+</dialog>
+<div id="main_page">
+<!--    主页面按钮-->
+    <hr />
+    <table>
+        <tr>
+            <td><button onclick="toggle_page_display(0)">移动</button></td>
+            <td><button onclick="toggle_page_display(1)">元件</button></td>
+            <td><button onclick="toggle_page_display(2)">标记</button></td>
+            <td><button onclick="toggle_page_display(3);show_cursor()">坐标</button></td>
+            <td><button onclick="toggle_page_display(4)">功能</button></td>
+        </tr>
+    </table>
+</div>
+<div id="move_page">
+<!--    移动页面按钮-->
+    <label id="label_now_direction">还没设置方向！</label><br>
+    <table>
+        <tr>
+            <td><button onclick="change_button_text()">变更</button></td>
+            <td><button id="nw" onclick="set_nw();add_cache()">西</button></td>
+            <td><button onclick="set_up();add_cache()">上</button></td>
+            <td><button id="ne" onclick="set_ne();add_cache()">北</button></td>
+            <td><button onclick="pipe_join();add_cache()">打断</button> </td>
+            <td><button onclick="undo()">撤销</button> </td>
+        </tr>
+        <tr>
+            <td><button onclick="page_back()">收起</button></td>
+            <td><button id="sw" onclick="set_sw();add_cache()">南</button></td>
+            <td><button onclick="set_dn();add_cache()">下</button></td>
+            <td><button id="se" onclick="set_se();add_cache()">东</button></td>
+            <td><button onclick="draw();add_cache()">前进</button> </td>
+            <td><button onclick="redo()">重做</button> </td>
+            <td><button onclick="setDegree();add_cache()">角度</button></td>
+        </tr>
+    </table>
+</div>
+
+<div id="component_page">
+    <!--    元件页面按钮-->
+    <table>
+        <tr>
+            <td></td>
+            <td><button onclick="gang();add_cache()">画杠</button> </td>
+            <td><button onclick="flange();add_cache()">法兰</button> </td>
+            <td><button onclick="large_to_small();add_cache()">大小</button></td>
+            <td><button onclick="meter(1);add_cache()">压表</button> </td>
+            <td><button onclick="fluent();add_cache()">流向</button></td>
+        </tr>
+        <tr>
+            <td><button onclick="page_back()">收起</button></td>
+            <td><button onclick="quan();add_cache()">画圈</button> </td>
+            <td><button onclick="valve();add_cache()">阀门</button></td>
+            <td><button onclick="small_to_large();add_cache()">小大</button></td>
+            <td><button onclick="meter(0);add_cache()">安阀</button> </td>
+            <td><button onclick="shape_snake();add_cache()">起止</button></td>
+        </tr>
+    </table>
+</div>
+
+<div id="stamp_page">
+    <!--    标记页面按钮-->
+    <label id="stamp_count">当前个数:0</label><br>
+    <label for="stamp_id" id="show_stamp_selected">当前选择第0</label><br>
+    <input id="stamp_id" type="range" min="1" max="10" step="1" oninput="show_stamp_selected()"/>
+
+    <table>
+        <tr>
+            <td><button onclick="page_back()">收起</button></td>
+            <td><button onclick="add_stamp()">添加</button></td>
+            <td><button onclick="goto_stamp();add_cache()">定位</button></td>
+            <td><button onclick="clear_stamp()" style="color: red"><b>清除</b></button></td>
+        </tr>
+    </table>
+</div>
+
+<div id="coordinate_page">
+<!--    坐标页面按钮-->
+    <label id="label_cursor">当前坐标：</label><br>
+    <label for="dest_x">设置横坐标：</label>
+    <input id="dest_x" type="number" placeholder="X坐标" oninput="dest_cursor()"/><br>
+    <label for="dest_y">设置纵坐标：</label>
+    <input id="dest_y" type="number" placeholder="Y坐标" oninput="dest_cursor()"/><br>
+    <table>
+        <tr>
+            <td><button onclick="page_back()">收起</button> </td>
+            <td><button onclick="set_cursor();add_cache()">确定</button> </td>
+            <td><button onclick="setPosByCursor()">指针</button></td>
+            <td><button onclick="document.getElementById('font_setting_page').showModal()">字体</button></td>
+            <td><button onclick="add_word();add_cache()">文字</button> </td>
+        </tr>
+    </table>
+
+</div>
+
+<div id="function_page">
+<!--    功能页面按钮-->
+    <input id="image_get" type="file" accept="image/*" style="display: none" oninput="insert_image(this.files)"/>
+    <a href="" id="download_image" download="单线图" style="display: none"></a>
+    <table>
+        <tr>
+            <td><button onclick="clear_canvas()" style="color: red; font-weight: bold">清屏</button> </td>
+            <td><button onclick="openFile();add_cache()">打开</button></td>
+            <td><button onclick="undo()">撤销</button> </td>
+        </tr>
+        <tr>
+            <td><button onclick="page_back()">收起</button></td>
+            <td><button onclick="download()">保存</button></td>
+            <td><button onclick="redo()">重做</button> </td>
+            <td><button class="blink" onclick="window.open('help.html')">帮助</button></td>
+        </tr>
+    </table>
+</div>
+
+<div id="canvas_div">
+<!--    画布区域-->
+    <canvas id="cursor_canvas" width="600" height="2000">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
+    <canvas id="stamp_canvas" width="600" height="2000">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
+    <canvas id="canvas" width="600" height="2000">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
+</div>
+</body>
+<footer>
+    <script src="app.js?v=0.1.4"></script>
+</footer>
+</html>
