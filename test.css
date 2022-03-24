@@ -1,25 +1,25 @@
 #canvas_div{
     margin:0 0;
-    border: 1px;
+    /* border: 1px; */
     z-index: 0;
 }
 #canvas{
     position: absolute;
     margin:0 0;
-    border: 1px solid;
+    /* border: 1px solid; */
     z-index: 0;
 }
 #cursor_canvas{
     position: absolute;
     margin:0 0;
-    border: 1px;
+    /* border: 1px; */
     z-index: 20;
     background-color: rgba(255,255,255,0);
 }
 #stamp_canvas{
     position: absolute;
     margin:0 0;
-    border: 1px;
+    /* border: 1px; */
     z-index: 10;
     background-color: rgba(255,255,255,0);
 }
@@ -205,4 +205,7 @@ img{
 .btn_hover:hover{
     fill-opacity: 0.5;
     transition: all 0.5s;
+}
+.clearCanvas{
+    width: 98%;
 }

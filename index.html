@@ -16,7 +16,7 @@
     <title>单线图在线绘制工具</title>
     <link rel="shortcut icon" href="fav.ico" type="image/x-icon">
     <link type="text/css" rel="stylesheet" href="test.css?v=0.0.3" />
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/js/jquery-3.6.0.js"></script>
     <script>
         /*禁止ios缩放，双击和双指*/
         window.onload = function () {
@@ -111,6 +111,7 @@
         <button type="button" onclick="download()">保存</button>
         <!-- 保存图片隐藏超链 -->
         <a href="" id="download_image" download="单线图" style="display: none"></a>
+        <button type="button" onclick="clear_canvas();clear_canvas();" class="clearCanvas">清除画布</button>
         <!--<hr />-->
         <!--<button id="about" type="button" onclick="window.open('about.html')">关于本网站</button>-->
     </div>
@@ -197,7 +198,7 @@
     </div>
 </body>
 <footer>
-    <script src="apptest.js?v=0.0.2"></script>
+    <script src="/js/apptest.js"></script>
 </footer>
 
 </html>

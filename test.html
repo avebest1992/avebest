@@ -1,0 +1,205 @@
+<!--
+  ~    Copyright(c)2021-2099, 江苏省特种设备安全监督检验研究院扬州分院
+  ~    项目名称:单线图手机端在线绘制
+  ~    文件名称:index.html
+  ~    Date:2021/3/22 下午10:50
+  ~    作者:周啸天
+  -->
+
+  <!DOCTYPE html>
+  <html lang="en">
+  
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+      <title>单线图在线绘制工具</title>
+      <link rel="shortcut icon" href="fav.ico" type="image/x-icon">
+      <link type="text/css" rel="stylesheet" href="test.css?v=0.0.3" />
+      <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+      <script src="undo-canvas.js"></script>
+      <script>
+          /*禁止ios缩放，双击和双指*/
+          window.onload = function () {
+              document.addEventListener('touchstart', function (event) {
+                  if (event.touches.length > 1) {
+                      event.preventDefault();
+                  }
+              });
+              let lastTouchEnd = 0;
+              document.addEventListener('touchend', function (event) {
+                  const now = (new Date()).getTime();
+                  if (now - lastTouchEnd <= 300) {
+                      event.preventDefault();
+                  }
+                  lastTouchEnd = now;
+              }, false);
+              document.addEventListener('gesturestart', function (event) {
+                  event.preventDefault();
+              });
+              document.addEventListener('dblclick', function (event) {
+                  event.preventDefault();
+              });
+              // ↓禁止用户选择字段（双击不会选中文字）
+              document.onselectstart = function(){return false;};
+              $('#slightlyAdjust').hide();
+              $('#cursorPanel').hide();
+              $('#componentPanel').hide();
+              $('#stampPanel').hide();
+          };
+      </script>
+  </head>
+  
+  <body>
+  
+      <div id="canvas_div">
+          <!--    画布区域-->
+          <canvas id="cursor_canvas" width="600" height="2000">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
+          <canvas id="stamp_canvas" width="600" height="2000">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
+          <canvas id="canvas" width="600" height="2000">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
+      </div>
+      <div id="toolbar">
+          <!-- 工具条 -->
+          <button id="hotkey" type="button" onclick="window.open('README.html')">使用说明</button>
+          <button onclick="alert(window.devicePixelRatio);">测试</button>
+          <hr />
+          <button class="menu" onclick="$('#coordinate').slideToggle();">坐标轴系</button>
+          <div id="coordinate" class="slidePanel">
+              <button onclick="change_button_text();">更改</button>
+              <button id="coordinateStateBtn" onclick="change_coordinateStateBtn();">隐藏</button>
+              <button onclick="setDegree();">角度</button>
+              <button onclick="pipe_join();">打断</button>
+          </div>
+          <hr />
+          <!-- 光标字体区 -->
+          <button class="menu" onclick="$('#cursorPanel').slideToggle();">光标字体</button>
+          <div id="cursorPanel" class="slidePanel">
+          <button type="button" onclick="setPosByCursor();">光标</button>
+          <button type="button" onclick="$('#slightlyAdjust').toggle();">微调</button>
+          <button type="button" onclick="add_word();">文字</button>
+          <button type="button" onclick="$('#font_setting').toggle()">字体</button>
+          </div>
+          <hr />
+          <!-- 元件区 -->
+          <button class="menu" onclick="$('#componentPanel').slideToggle();">元件绘制</button>
+          <div id="componentPanel" class="slidePanel">
+          <button id="flange" onclick="flange();" type="button"></button>
+          <button id="valve" onclick="valve();" type="button"></button>
+          <button id="fluent" onclick="fluent();" type="button"></button>
+          <button id="shape_snake" onclick="shape_snake();" type="button"></button>
+          <button id="large_to_small" type="button" onclick="large_to_small();"></button>
+          <button id="small_to_large" type="button" onclick="small_to_large();"></button>
+          <button id="safety" type="button" onclick="meter(0);"></button>
+          <button id="pressure_gauge" type="button" onclick="meter(1);"></button>
+          <button id="gang" type="button" onclick="gang();"></button>
+          <button id="quan" type="button" onclick="quan();"></button>
+          </div>
+          <hr />
+          <!-- 标记区 -->
+          <button class="menu" onclick="$('#stampPanel').slideToggle();">标记定位</button>
+          <div id="stampPanel" class="slidePanel">
+          <button type="button" onclick="add_stamp();">标记</button>
+          <button type="button" onclick="$('#chooseStamp').toggle();">选择</button>
+          <button type="button" onclick="clear_stamp();">清除</button>
+          <button type="button" onclick="goto_stamp(1);">定位</button>
+          </div>
+          <hr />
+          <button type="button" onclick="undo()">撤销</button>
+          <button type="button" onclick="redo()">恢复</button>
+          <button type="button" onclick="openFile();">打开</button>
+           <!-- 打开图片隐藏按钮 -->
+          <input id="image_get" type="file" accept="image/*" style="display: none" oninput="insert_image(this.files)"/>
+          <button type="button" onclick="download()">保存</button>
+          <!-- 保存图片隐藏超链 -->
+          <a href="" id="download_image" download="单线图" style="display: none"></a>
+          <!--<hr />-->
+          <img id="coordinateSVG" src="/images/coordinate.svg" alt="coordinate" style="display: none;">
+          <!--<button id="about" type="button" onclick="window.open('about.html')">关于本网站</button>-->
+      </div>
+      <div id="slightlyAdjust">
+          <!-- 微调页面 -->
+          <button class="nodisplay"></button>
+          <button class="display" onclick="slightly_adjust(1);">↑</button>
+          <button class="nodisplay"></button>
+          <button class="display" onclick="slightly_adjust(2);">←</button>
+          <button class="display" onclick="$('#slightlyAdjust').hide();">x</button>
+          <button class="display" onclick="slightly_adjust(3);">→</button>
+          <button class="nodisplay"></button>
+          <button class="display" onclick="slightly_adjust(4);">↓</button>
+          <button class="nodisplay"></button>
+      </div>
+      <div id="font_setting">
+          <!-- 字体设置页面 -->
+          颜色：
+          <select name="fontColor" id="fontColor">
+              <option value="black">黑色</option>
+              <option value="red">红色</option>
+              <option value="blue">蓝色</option>
+              <option value="green">绿色</option>
+          </select>
+          字号：
+          <select name="fontSize" id="fontSize">
+              <option value="12px" selected>12</option>
+              <option value="14px">14</option>
+              <option value="16px">16</option>
+              <option value="18px">18</option>
+              <option value="20px">20</option>
+              <option value="25px">25</option>
+              <option value="30px">30</option>
+              <option value="35px">35</option>
+              <option value="40px">40</option>
+              <option value="45px">50</option>
+              <option value="60px">60</option>
+          </select>
+          字体：
+          <select name="fontFamily" id="fontFamily">
+              <option value="Helvetica">默认</option>
+              <option value="黑体">黑体</option>
+              <option value="宋体">宋体</option>
+              <option value="仿宋">仿宋</option>
+              <option value="楷体">楷体</option>
+          </select>
+          <hr />
+          <button onclick="font_setting()">确定</button>
+          <button onclick="$('#font_setting').hide()">取消</button>
+      </div>
+      <div id="chooseStamp">
+          <!-- 标记选择页面 -->
+          请选择标记序号 
+          <button class="close" onclick="$('#chooseStamp').hide();">x</button>
+          <hr />
+      </div>
+  
+      <div id="basicPanel">
+          <!-- 设置方向、前进 -->
+          <svg id="SVGRoot" width="150" height="150" version="1.1" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <g fill="#000000">
+               <text x="42" y="65" font-family="FangSong" font-size="18.667px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;line-height:1.25" xml:space="preserve"><tspan x="42" y="65" font-family="FangSong" font-size="18.667px" style="font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal">前进</tspan></text>
+               <g font-family="sans-serif" font-size="17.333px">
+                <text x="16" y="46" style="line-height:1.25" xml:space="preserve"><tspan x="16" y="46" font-family="FangSong" font-size="17.333px" id="nw">西</tspan></text>
+                <text x="17" y="86" style="line-height:1.25" xml:space="preserve"><tspan x="17" y="86" font-family="FangSong" font-size="17.333px" id="sw">南</tspan></text>
+                <text x="52" y="106" style="line-height:1.25" xml:space="preserve"><tspan x="52" y="106" font-family="FangSong" font-size="17.333px">下</tspan></text>
+                <text x="85" y="86" style="line-height:1.25" xml:space="preserve"><tspan x="85" y="86" font-family="FangSong" font-size="17.333px" id="se">东</tspan></text>
+                <text x="86" y="46" style="line-height:1.25" xml:space="preserve"><tspan x="86" y="46" font-family="FangSong" font-size="17.333px" id="ne">北</tspan></text>
+                <text x="51" y="26" style="line-height:1.25" xml:space="preserve"><tspan x="51" y="26" font-family="FangSong" font-size="17.333px">上</tspan></text>
+               </g>
+              </g>
+              <g fill-opacity="0" stroke="#000">
+               <g>
+                <path class="btn_hover" d="m45.971 86.07-10.135 17.555a50 50 0 0 0 24.164 6.375 50 50 0 0 0 23.664-6.1074l-10.139-17.562a29.75 29.75 0 0 1-13.525 3.4199 29.75 29.75 0 0 1-14.029-3.6797z" onclick="set_dn();"/>
+                <path class="btn_hover" d="m89.68 61.5a29.75 29.75 0 0 1-12.705 22.803l10.17 17.615a50 50 0 0 0 22.805-40.418z" onclick="set_se();"/>
+                <path class="btn_hover" d="m10.051 61.5a50 50 0 0 0 22.344 40.082l10.182-17.635a29.75 29.75 0 0 1-12.256-22.447z" onclick="set_sw();"/>
+                <path class="btn_hover" d="m33.76 17.455a50 50 0 0 0-23.674 40.045h20.279a29.75 29.75 0 0 1 13.543-22.469z" onclick="set_nw();"/>
+                <path class="btn_hover" d="m85.738 17.189-10.111 17.514a29.75 29.75 0 0 1 14.008 22.797h20.279a50 50 0 0 0-24.176-40.311z" onclick="set_ne();"/>
+                <path class="btn_hover" d="m60 10a50 50 0 0 0-22.697 5.5898l10.145 17.572a29.75 29.75 0 0 1 12.553-2.9121 29.75 29.75 0 0 1 12.045 2.6562l10.148-17.58a50 50 0 0 0-22.193-5.3262z" onclick="set_up();"/>
+               </g>
+               <circle class="btn_hover" cx="60" cy="60" r="25" onclick="draw();"/>
+              </g>
+             </svg>
+      </div>
+  </body>
+  <footer>
+      <script src="testUndoModule.js"></script>
+  </footer>
+  
+  </html>
