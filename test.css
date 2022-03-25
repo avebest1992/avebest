@@ -1,25 +1,33 @@
 #canvas_div{
     margin:0 0;
-    /* border: 1px; */
     z-index: 0;
 }
 #canvas{
     position: absolute;
     margin:0 0;
-    /* border: 1px solid; */
     z-index: 0;
 }
 #cursor_canvas{
     position: absolute;
     margin:0 0;
-    /* border: 1px; */
+    z-index: 30;
+    background-color: rgba(255,255,255,0);
+}
+#catch_canvas{
+    position: absolute;
+    margin:0 0;
     z-index: 20;
+    background-color: rgba(255,255,255,0);
+}
+#manipulate_canvas{
+    position: absolute;
+    margin:0 0;
+    z-index: 15;
     background-color: rgba(255,255,255,0);
 }
 #stamp_canvas{
     position: absolute;
     margin:0 0;
-    /* border: 1px; */
     z-index: 10;
     background-color: rgba(255,255,255,0);
 }

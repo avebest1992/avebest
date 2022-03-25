@@ -54,13 +54,15 @@
     <div id="canvas_div">
         <!--    画布区域-->
         <canvas id="cursor_canvas" width="600" height="2000">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
+        <canvas id="catch_canvas" width="748" height="1058">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
+        <canvas id="manipulate_canvas" width="748" height="1058">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
         <canvas id="stamp_canvas" width="600" height="2000">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
         <canvas id="canvas" width="600" height="2000">您的浏览器不支持html5，请用IE9以上或Chrome浏览器打开</canvas>
     </div>
     <div id="toolbar">
         <!-- 工具条 -->
         <button id="hotkey" type="button" onclick="window.open('README.html')">使用说明</button>
-        <button onclick="alert(window.devicePixelRatio);">测试</button>
+        <button onclick="paste();">测试</button>
         <hr />
         <button class="menu" onclick="$('#coordinate').slideToggle();">坐标轴系</button>
         <div id="coordinate" class="slidePanel">

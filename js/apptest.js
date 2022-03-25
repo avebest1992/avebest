@@ -18,6 +18,25 @@ const cursor = cursor_canvas.getContext("2d");
 // 初始化标记画布
 const stamp_canvas = document.getElementById("stamp_canvas");
 const stamp = stamp_canvas.getContext("2d");
+// 初始化操纵画布
+const manipulate_canvas = document.getElementById("manipulate_canvas");
+const manipulate = manipulate_canvas.getContext("2d");
+manipulate.lineWidth = 2;
+manipulate.setLineDash([4,2]);
+// 初始化捕捉画布
+const catch_canvas = document.getElementById("catch_canvas");
+const autoCatch = catch_canvas.getContext("2d");
+autoCatch.strokeStyle = 'grey';
+autoCatch.lineWidth = 1;
+autoCatch.setLineDash([3,1]);
+let catchPoints = [];
+let catchCount = 0;
+function addCatch() {
+    catchPoints[catchCount] = new Path2D();
+    [catchPoints[catchCount].x,catchPoints[catchCount].y] = [t.nowX,t.nowY];
+    catchPoints[catchCount].rect(t.nowX-4,t.nowY-4,8,8);
+    catchCount += 1;
+}
 // 宽高初始化
 function findFirstPositive(b, a, i, c) {
     c = (d, e) => e >= d ? (a = d + (e - d) / 2, 0 < b(a) && (a == d || 0 >= b(a - 1)) ? a : 0 >= b(a) ? c(a + 1, e) : c(d, a - 1)) : -1
@@ -109,6 +128,7 @@ function draw(distance = 20) {
     ctx.lineTo(t.nowX, t.nowY);
     ctx.stroke();
     draw_cursor();
+    addCatch();
 }
 function startTrans() {
     // 开始变换画布坐标系
@@ -297,21 +317,34 @@ function add_word() {
 }
 function setPosByCursor() {
     cursor_canvas.style.cursor = "crossHair";
+    catchPoints.forEach(ele => {
+        autoCatch.stroke(ele);
+    });
     cursor_canvas.addEventListener("click", myFunc);
 }
 function myFunc(event) {
     getMousePos(canvas, event);
 }
 function getMousePos(canvas, event) {
-    //1
+    autoCatch.clearRect(0,0,w,h);
+    let isCatched = false
     let rect = canvas.getBoundingClientRect();
-    //2
     let x = event.clientX - rect.left * (canvas.width / rect.width);
     let y = event.clientY - rect.top * (canvas.height / rect.height);
+    for (let index = 0; index < catchPoints.length; index++) {
+        const ele = catchPoints[index];
+        if (autoCatch.isPointInPath(ele,x,y)){
+            [t.nowX,t.nowY] = [ele.x,ele.y];
+            isCatched = true;
+            break
+        }
+    }
     // console.log("x:"+x+",y:"+y);
     // if(confirm("设定到当前位置？")){
-    t.nowX = x;
-    t.nowY = y;
+    if (isCatched == false){
+        t.nowX = x;
+        t.nowY = y;
+    }
     draw_cursor();
     cursor_canvas.style.cursor = "default";
     cursor_canvas.removeEventListener("click", myFunc);
@@ -700,3 +733,47 @@ ctx.lineWidth=2;
 ctx.rect(1, 1, w - 2, h - 2);
 ctx.stroke();
 coordinate();
+
+// 还没整理好的：
+function test(){
+    let word = 'P1111';
+    ctx.save();
+    ctx.translate(t.nowX,t.nowY);
+    ctx.rotate(dToR(t.heading));
+    ctx.font = '70px Arial'
+    ctx.translate(0,-20);
+    ctx.fillText(word,0,20);
+    ctx.restore();
+}
+
+function windowToCanvas(x,y) {
+    let rect = canvas.getBoundingClientRect();
+    x = x - rect.left * (canvas.width / rect.width);
+    y = y - rect.top * (canvas.height / rect.height);
+    return [x,y];
+}
+let mRect = {x:0,y:0,w:0,h:0};
+function handleMouseMove(e){
+    let temp = windowToCanvas(e.clientX,e.clientY);
+    [mRect.w,mRect.h] = [temp[0]-mRect.x,temp[1]-mRect.y];
+    manipulate.clearRect(0,0,748,1058);
+    manipulate.strokeRect(mRect.x,mRect.y,mRect.w,mRect.h);
+    // manipulate.stroke();
+
+}
+function handleMouseDown(e){
+    [mRect.x,mRect.y]=windowToCanvas(e.clientX,e.clientY)
+    cursor_canvas.addEventListener('mousemove',handleMouseMove);
+    cursor_canvas.addEventListener('mouseup',()=>{
+        console.log('mouseup')
+        cursor_canvas.removeEventListener('mousemove',handleMouseMove)
+    },{once:true});
+}
+cursor_canvas.addEventListener('mousedown',handleMouseDown);
+function paste(){
+    cursor_canvas.removeEventListener('mousedown',handleMouseDown);
+    // cursor_canvas.removeEventListener('mouseup',handleMouseUp);
+    let imgData = ctx.getImageData(mRect.x,mRect.y,mRect.w,mRect.h);
+    ctx.putImageData(imgData,t.nowX,t.nowY,);
+    
+}
