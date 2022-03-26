@@ -18,23 +18,26 @@ const cursor = cursor_canvas.getContext("2d");
 // 初始化标记画布
 const stamp_canvas = document.getElementById("stamp_canvas");
 const stamp = stamp_canvas.getContext("2d");
+// 初始化离屏画布
+const offscreen_canvas = document.getElementById('offscreen_canvas');
+const offscreen = offscreen_canvas.getContext('2d');
 // 初始化操纵画布
 const manipulate_canvas = document.getElementById("manipulate_canvas");
 const manipulate = manipulate_canvas.getContext("2d");
 manipulate.lineWidth = 2;
-manipulate.setLineDash([4,2]);
+manipulate.setLineDash([4, 2]);
 // 初始化捕捉画布
 const catch_canvas = document.getElementById("catch_canvas");
 const autoCatch = catch_canvas.getContext("2d");
 autoCatch.strokeStyle = 'grey';
 autoCatch.lineWidth = 1;
-autoCatch.setLineDash([3,1]);
+autoCatch.setLineDash([3, 1]);
 let catchPoints = [];
 let catchCount = 0;
 function addCatch() {
     catchPoints[catchCount] = new Path2D();
-    [catchPoints[catchCount].x,catchPoints[catchCount].y] = [t.nowX,t.nowY];
-    catchPoints[catchCount].rect(t.nowX-4,t.nowY-4,8,8);
+    [catchPoints[catchCount].x, catchPoints[catchCount].y] = [t.nowX, t.nowY];
+    catchPoints[catchCount].rect(t.nowX - 4, t.nowY - 4, 8, 8);
     catchCount += 1;
 }
 // 宽高初始化
@@ -91,13 +94,13 @@ let t = {
     heading: 0,
 }
 let cursorTransparency = 1
-function draw_cursor(){
+function draw_cursor() {
     if (cursorTransparency < 0.1) {
         cursorTransparency = 1;
-    }else{
+    } else {
         cursorTransparency -= 0.01;
     }
-    cursor.clearRect(0,0,w,h);
+    cursor.clearRect(0, 0, w, h);
     cursor.save();
     cursor.beginPath();
     cursor.arc(t.nowX, t.nowY, 4, 0, Math.PI * 2);
@@ -105,7 +108,7 @@ function draw_cursor(){
     cursor.fillStyle = `rgba(0,0,255,${cursorTransparency})`;
     cursor.fill();
 }
-(function loopCursor(){
+(function loopCursor() {
     draw_cursor();
     window.requestAnimationFrame(loopCursor);
 })();
@@ -326,22 +329,22 @@ function myFunc(event) {
     getMousePos(canvas, event);
 }
 function getMousePos(canvas, event) {
-    autoCatch.clearRect(0,0,w,h);
+    autoCatch.clearRect(0, 0, w, h);
     let isCatched = false
     let rect = canvas.getBoundingClientRect();
     let x = event.clientX - rect.left * (canvas.width / rect.width);
     let y = event.clientY - rect.top * (canvas.height / rect.height);
     for (let index = 0; index < catchPoints.length; index++) {
         const ele = catchPoints[index];
-        if (autoCatch.isPointInPath(ele,x,y)){
-            [t.nowX,t.nowY] = [ele.x,ele.y];
+        if (autoCatch.isPointInPath(ele, x, y)) {
+            [t.nowX, t.nowY] = [ele.x, ele.y];
             isCatched = true;
             break
         }
     }
     // console.log("x:"+x+",y:"+y);
     // if(confirm("设定到当前位置？")){
-    if (isCatched == false){
+    if (isCatched == false) {
         t.nowX = x;
         t.nowY = y;
     }
@@ -500,7 +503,7 @@ function undo() {
         t.nowX = cache[cache_index].x;
         t.nowY = cache[cache_index].y;
         draw_cursor();
-    } 
+    }
     else {
         alert("没了！");
     }
@@ -729,51 +732,114 @@ function coordinate() {
     ctx.stroke();
     draw_cursor();
 }
-ctx.lineWidth=2;
+ctx.lineWidth = 2;
 ctx.rect(1, 1, w - 2, h - 2);
 ctx.stroke();
 coordinate();
 
 // 还没整理好的：
-function test(){
+function test() {
     let word = 'P1111';
     ctx.save();
-    ctx.translate(t.nowX,t.nowY);
+    ctx.translate(t.nowX, t.nowY);
     ctx.rotate(dToR(t.heading));
     ctx.font = '70px Arial'
-    ctx.translate(0,-20);
-    ctx.fillText(word,0,20);
+    ctx.translate(0, -20);
+    ctx.fillText(word, 0, 20);
     ctx.restore();
 }
-
-function windowToCanvas(x,y) {
+// 选择功能
+function windowToCanvas(x, y) {
     let rect = canvas.getBoundingClientRect();
     x = x - rect.left * (canvas.width / rect.width);
     y = y - rect.top * (canvas.height / rect.height);
-    return [x,y];
+    return [x, y];
 }
-let mRect = {x:0,y:0,w:0,h:0};
-function handleMouseMove(e){
-    let temp = windowToCanvas(e.clientX,e.clientY);
-    [mRect.w,mRect.h] = [temp[0]-mRect.x,temp[1]-mRect.y];
-    manipulate.clearRect(0,0,748,1058);
-    manipulate.strokeRect(mRect.x,mRect.y,mRect.w,mRect.h);
-    // manipulate.stroke();
-
+let mRect = { x: 0, y: 0, w: 0, h: 0 };
+function whileSelecting(e) {
+    let temp = windowToCanvas(e.clientX, e.clientY);
+    [mRect.w, mRect.h] = [temp[0] - mRect.x, temp[1] - mRect.y];
+    manipulate.clearRect(0, 0, 748, 1058);
+    manipulate.strokeRect(mRect.x, mRect.y, mRect.w, mRect.h);
 }
-function handleMouseDown(e){
-    [mRect.x,mRect.y]=windowToCanvas(e.clientX,e.clientY)
-    cursor_canvas.addEventListener('mousemove',handleMouseMove);
-    cursor_canvas.addEventListener('mouseup',()=>{
-        console.log('mouseup')
-        cursor_canvas.removeEventListener('mousemove',handleMouseMove)
-    },{once:true});
+function startSelect(e) {
+    [mRect.x, mRect.y] = windowToCanvas(e.clientX, e.clientY)
+    cursor_canvas.addEventListener('mousemove', whileSelecting);
+    cursor_canvas.addEventListener('mouseup', () => {
+        // console.log('mouseup')
+        cursor_canvas.removeEventListener('mousemove', whileSelecting)
+    }, { once: true });
 }
-cursor_canvas.addEventListener('mousedown',handleMouseDown);
-function paste(){
-    cursor_canvas.removeEventListener('mousedown',handleMouseDown);
-    // cursor_canvas.removeEventListener('mouseup',handleMouseUp);
-    let imgData = ctx.getImageData(mRect.x,mRect.y,mRect.w,mRect.h);
-    ctx.putImageData(imgData,t.nowX,t.nowY,);
-    
+function select() {
+    cursor_canvas.addEventListener('mousedown', startSelect, { once: true });
+}
+// 拖动功能
+let mPoints = { startX: 0, startY: 0, endX: 0, endY: 0 }
+let offscreenImage = new Image();
+function canvasToOffscreenImage() {
+    offscreen.clearRect(0, 0, offscreen_canvas.width, offscreen_canvas.height);
+    [offscreen_canvas.width, offscreen_canvas.height] = [mRect.w, mRect.h];
+    let imgData = ctx.getImageData(mRect.x, mRect.y, mRect.w, mRect.h);
+    offscreen.putImageData(imgData, 0, 0);
+    offscreenImage.src = offscreen_canvas.toDataURL();
+}
+function whileMoving(e) {
+    manipulate.clearRect(0, 0, w, h);
+    [mPoints.endX, mPoints.endY] = [e.clientX, e.clientY];
+    let [x, y] = [mRect.x + mPoints.endX - mPoints.startX, mRect.y + mPoints.endY - mPoints.startY];
+    manipulate.drawImage(offscreenImage, x, y);
+    manipulate.strokeRect(x, y, mRect.w, mRect.h);
+}
+function startMove(e) {
+    if (cursor_canvas.style.cursor == 'default'){return;}
+    [mPoints.startX, mPoints.startY] = [e.clientX, e.clientY];
+    cursor_canvas.addEventListener('mousemove', whileMoving);
+    cursor_canvas.addEventListener('mouseup', () => {
+        cursor_canvas.removeEventListener('mousemove', whileMoving);
+        [mRect.x, mRect.y] = [mRect.x + mPoints.endX - mPoints.startX, mRect.y + mPoints.endY - mPoints.startY];
+    }, { once: true });
+}
+function changeCursorStyle(e){
+    let [x, y] = windowToCanvas(e.clientX, e.clientY);
+    if ((x >= mRect.x) & (x <= mRect.x + mRect.w) & (y >= mRect.y) & (y <= mRect.y + mRect.h)) {
+        cursor_canvas.style.cursor = 'move'
+    }
+    else {
+        cursor_canvas.style.cursor = 'default'
+    }
+}
+function move() {
+    if (mRect.w == 0) { alert('请先选择目标区域'); return; }
+    if ($('#move').text() == '确定') {
+        $('#move').text('移动');
+        manipulate.clearRect(0, 0, 748, 1058);
+        ctx.drawImage(offscreenImage, mRect.x, mRect.y);
+        cursor_canvas.style.cursor = "default";
+        cursor_canvas.removeEventListener('mousedown', startMove);
+        cursor_canvas.removeEventListener('mousemove', changeCursorStyle);
+    } else {
+        $('#move').text('确定');
+        // cursor_canvas.style.cursor = "move";
+        cursor_canvas.addEventListener('mousemove', changeCursorStyle)
+        canvasToOffscreenImage();
+        ctx.clearRect(mRect.x, mRect.y, mRect.w, mRect.h);
+        add_cache();
+        offscreenImage.onload = () => { manipulate.drawImage(offscreenImage, mRect.x, mRect.y); }
+        cursor_canvas.addEventListener('mousedown', startMove);
+    }
+}
+// 粘贴功能
+function paste() {
+    manipulate.clearRect(0, 0, 748, 1058);
+    // cursor_canvas.removeEventListener('mousedown', startSelect);
+    let imgData = ctx.getImageData(mRect.x, mRect.y, mRect.w, mRect.h);
+    ctx.putImageData(imgData, t.nowX, t.nowY,);
+}
+// 删除功能
+function deleteArea() {
+    add_cache();
+    manipulate.clearRect(0, 0, 748, 1058);
+    ctx.beginPath();
+    ctx.clearRect(mRect.x, mRect.y, mRect.w, mRect.h);
+    add_cache();
 }
