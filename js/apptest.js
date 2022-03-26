@@ -843,3 +843,30 @@ function deleteArea() {
     ctx.clearRect(mRect.x, mRect.y, mRect.w, mRect.h);
     add_cache();
 }
+// 橡皮擦功能
+function startEraser(e) {
+    let [x,y] = windowToCanvas(e.clientX,e.clientY);
+    add_cache();
+    ctx.beginPath();
+    ctx.clearRect(x-5,y-5,10,10);
+    cursor_canvas.addEventListener('mousemove',moveEraser);
+    cursor_canvas.addEventListener('mouseup',()=>{
+        cursor_canvas.removeEventListener('mousemove',moveEraser);
+    },{once:true});
+}
+function moveEraser(e) {
+    let [x,y] = windowToCanvas(e.clientX,e.clientY);
+    ctx.beginPath();
+    ctx.clearRect(x-5,y-5,10,10);
+}
+function eraser() {
+    if($('#eraser').text()=='橡皮'){
+        $('#eraser').text('关闭');
+        cursor_canvas.style.cursor = 'url(/images/eraser.svg) 8 8,move';
+        cursor_canvas.addEventListener('mousedown',startEraser);
+    }else{
+        $('#eraser').text('橡皮');
+        cursor_canvas.style.cursor = 'default';
+        cursor_canvas.removeEventListener('mousedown',startEraser);
+    }
+}
